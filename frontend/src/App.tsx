@@ -27,6 +27,18 @@ function App() {
   const [items, setItems] = useState<VoteItem[]>([]);
   const [connected, setConnected] = useState(false);
   const [newShowName, setNewShowName] = useState("");
+  const [isDarkMode, setIsDarkMode] = useState(
+    document.documentElement.classList.contains("dark")
+  );
+
+  const toggleTheme = () => {
+    const newMode = !isDarkMode;
+    setIsDarkMode(newMode);
+    const setTheme = (window as any).setTheme;
+    if (setTheme) {
+      setTheme(newMode ? "dark" : "light");
+    }
+  };
 
   // socket setup
   useEffect(() => {
@@ -83,6 +95,16 @@ function App() {
     <div className="min-h-screen flex items-center justify-center">
       <Container size="1">
         <Flex direction="column" gap="2" align="center" mb="5">
+          <Flex width="100%" justify="between" align="center" mb="3">
+            <div />
+            <Button
+              variant="soft"
+              onClick={toggleTheme}
+              title={isDarkMode ? "Switch to light mode" : "Switch to dark mode"}
+            >
+              {isDarkMode ? "☀️ Light" : "🌙 Dark"}
+            </Button>
+          </Flex>
           <Heading size="5" align="center">
             Vote your favourite TV Show
           </Heading>
