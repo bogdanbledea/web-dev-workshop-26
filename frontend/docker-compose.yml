@@ -3,6 +3,10 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      args:
+        - VITE_SOCKET_URL=${VITE_SOCKET_URL}
+        - VITE_API_KEY=${VITE_API_KEY}
+        - VITE_BACKEND_URL=${VITE_BACKEND_URL}
     container_name: voting-frontend
     ports:
       - "80:80"
