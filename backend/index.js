@@ -10,7 +10,12 @@ const server = http.createServer(app);
 const port = 3000;
 
 const io = new Server(server, {
-  cors: { origin: "*", methods: ["GET", "POST"] },
+  cors: {
+    origin: "*",
+    methods: ["GET", "POST"],
+    credentials: false,
+  },
+  transports: ["websocket", "polling"],
 });
 
 io.on("connection", (socket) => {
@@ -45,6 +50,6 @@ app.post("/api/vote", (req, res) => {
   }
 });
 
-server.listen(port, () => {
+server.listen(port, "0.0.0.0", () => {
   console.log(`web dev app listening on port ${port}`);
 });
