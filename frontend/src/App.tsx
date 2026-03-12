@@ -7,6 +7,7 @@ import {
   Card,
   Button,
   Badge,
+  TextField,
 } from "@radix-ui/themes";
 import axios from "axios";
 import { socket } from "./socket";
@@ -25,6 +26,7 @@ interface VoteItem {
 function App() {
   const [items, setItems] = useState<VoteItem[]>([]);
   const [connected, setConnected] = useState(false);
+  const [newShowName, setNewShowName] = useState("");
 
   // socket setup
   useEffect(() => {
@@ -41,10 +43,12 @@ function App() {
 
   // listen for updates from backend
   useEffect(() => {
-    const onVote = (data: any) => setItems(data.shows);
-    socket.on("vote", onVote);
+    const updateShows = (data: any) => setItems(data.shows);
+    socket.on("vote", updateShows);
+    socket.on("new-show", updateShows);
     return () => {
-      socket.off("vote", onVote);
+      socket.off("vote", updateShows);
+      socket.off("new-show", updateShows);
     };
   }, []);
 
@@ -57,6 +61,20 @@ function App() {
     apiClient.post("/api/vote", { id }).catch((err) => {
       console.error("Failed to cast vote:", err);
     });
+  };
+
+  const handleAddShow = () => {
+    const name = newShowName.trim();
+    if (!name) {
+      return;
+    }
+
+    apiClient
+      .post("/api/shows", { name })
+      .then(() => setNewShowName(""))
+      .catch((err) => {
+        console.error("Failed to add show:", err);
+      });
   };
 
   const totalVotes = items.reduce((sum, item) => sum + item.votes, 0);
@@ -76,6 +94,24 @@ function App() {
               ? `${totalVotes} vote${totalVotes !== 1 ? "s" : ""} cast`
               : "No votes yet"}
           </Text>
+        </Flex>
+
+        <Flex gap="2" mb="5" width="100%" align="center">
+          <TextField.Root
+            type="text"
+            placeholder="Enter show name..."
+            value={newShowName}
+            onChange={(event) => setNewShowName(event.target.value)}
+            onKeyDown={(event) => {
+              if (event.key === "Enter") {
+                handleAddShow();
+              }
+            }}
+            className="h-10 flex-1"
+          />
+          <Button className="h-10 px-4" onClick={handleAddShow}>
+            Add Show
+          </Button>
         </Flex>
 
         <Flex direction="column" gap="3">

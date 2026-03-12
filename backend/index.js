@@ -37,6 +37,19 @@ app.get("/api/shows", (req, res) => {
   res.json(shows);
 });
 
+app.post("/api/shows", (req, res) => {
+  const { name } = req.body;
+  if (name) {
+    const newShow = { id: shows.length + 1, name, votes: 0 };
+    shows.push(newShow);
+    console.log(`Added new show: ${name}`);
+    io.emit("new-show", { shows });
+    res.json({ success: true, show: newShow });
+  } else {
+    res.status(400).json({ success: false, message: "Name is required" });
+  }
+});
+
 app.post("/api/vote", (req, res) => {
   const { id } = req.body;
   const show = shows.find((s) => s.id === id);
