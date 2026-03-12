@@ -5,9 +5,8 @@ import http from "http";
 import cors from "cors";
 import apiKeyAuth from "./middleware/auth.js";
 
-app.use(cors());
-
 const app = express();
+app.use(cors());
 const server = http.createServer(app);
 const port = 3000;
 
